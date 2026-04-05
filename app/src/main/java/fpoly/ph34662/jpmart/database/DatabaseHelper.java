@@ -120,6 +120,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public boolean updatePassword(String maNV, String newPass) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("matKhau", newPass);
+        int rows = db.update("NhanVien", values, "maNV=?", new String[]{maNV});
+        return rows > 0;
+    }
+
     // --- Methods for DanhMuc ---
     public void themDanhMuc(DanhMuc dm) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -141,6 +149,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("ngayNhap", sp.getNgayNhap());
         values.put("maDM", sp.getMaDM());
         db.insert("SanPham", null, values);
+    }
+
+    public double layDonGiaSanPham(String maSP) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("SanPham", new String[]{"giaBan"}, "maSP=?", new String[]{maSP}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            double gia = cursor.getDouble(0);
+            cursor.close();
+            return gia;
+        }
+        return 0;
     }
 
     // --- Methods for KhachHang ---
@@ -167,8 +186,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("HoaDon", null, values);
     }
 
+    public void capNhatTongTienHoaDon(String maHD, double tongTien) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("tongTien", tongTien);
+        db.update("HoaDon", values, "maHD=?", new String[]{maHD});
+    }
+
     // --- Methods for HoaDonChiTiet ---
-    public void themHoaDonChiTiet(HoaDonChiTiet hdct) {
+    public void themHDCT(HoaDonChiTiet hdct) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("maHD", hdct.getMaHD());

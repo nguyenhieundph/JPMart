@@ -5,4 +5,12 @@
     <color name="blue">#2196F3</color>
     <color name="red">#F44336</color>
 
+    <!-- Professional Palette -->
+    <color name="primaryColor">#1E88E5</color>
+    <color name="primaryVariant">#1565C0</color>
+    <color name="secondaryColor">#FFC107</color>
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="hintColor">#BDBDBD</color>
 </resources>
