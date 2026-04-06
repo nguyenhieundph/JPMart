@@ -11,19 +11,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JPMart">
+        
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.JPMart" />
+            android:exported="false" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
+        <!-- Đăng ký các màn hình thống kê -->
+        <activity 
+            android:name=".ui.ThongKeDoanhThu"
+            android:exported="false" />
+        <activity 
+            android:name=".ui.ThongKeSanPham"
+            android:exported="false" />
+
         <activity
             android:name=".ui.WelcomeAtivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

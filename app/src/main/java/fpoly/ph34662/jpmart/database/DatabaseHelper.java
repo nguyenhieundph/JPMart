@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fpoly.ph34662.jpmart.model.DanhMuc;
 import fpoly.ph34662.jpmart.model.HoaDon;
 import fpoly.ph34662.jpmart.model.HoaDonChiTiet;
@@ -24,7 +27,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Table NhanVien
         db.execSQL("CREATE TABLE NhanVien (" +
                 "maNV TEXT PRIMARY KEY, " +
                 "hoTen TEXT, " +
@@ -33,12 +35,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "luong REAL, " +
                 "matKhau TEXT)");
 
-        // Table DanhMuc
         db.execSQL("CREATE TABLE DanhMuc (" +
                 "maDM TEXT PRIMARY KEY, " +
                 "tenDM TEXT)");
 
-        // Table SanPham
         db.execSQL("CREATE TABLE SanPham (" +
                 "maSP TEXT PRIMARY KEY, " +
                 "tenSP TEXT, " +
@@ -49,7 +49,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "maDM TEXT, " +
                 "FOREIGN KEY(maDM) REFERENCES DanhMuc(maDM))");
 
-        // Table KhachHang
         db.execSQL("CREATE TABLE KhachHang (" +
                 "maKH TEXT PRIMARY KEY, " +
                 "hoTen TEXT, " +
@@ -57,7 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "soDienThoai TEXT, " +
                 "email TEXT)");
 
-        // Table HoaDon
         db.execSQL("CREATE TABLE HoaDon (" +
                 "maHD TEXT PRIMARY KEY, " +
                 "maNV TEXT, " +
@@ -67,7 +65,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(maNV) REFERENCES NhanVien(maNV), " +
                 "FOREIGN KEY(maKH) REFERENCES KhachHang(maKH))");
 
-        // Table HoaDonChiTiet
         db.execSQL("CREATE TABLE HoaDonChiTiet (" +
                 "maHDCT INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "maHD TEXT, " +
@@ -89,7 +86,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // --- Methods for NhanVien ---
+    public List<SanPham> getTopSanPham(String tuNgay, String denNgay, int limit) {
+        List<SanPham> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT sp.maSP, sp.tenSP, SUM(hdct.soLuong) as totalSold " +
+                "FROM SanPham sp " +
+                "JOIN HoaDonChiTiet hdct ON sp.maSP = hdct.maSP " +
+                "JOIN HoaDon hd ON hdct.maHD = hd.maHD " +
+                "WHERE hd.ngayMua BETWEEN ? AND ? " +
+                "GROUP BY sp.maSP " +
+                "ORDER BY totalSold DESC LIMIT ?";
+        
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                SanPham sp = new SanPham();
+                sp.setMaSP(cursor.getString(0));
+                sp.setTenSP(cursor.getString(1));
+                sp.setSoLuong(cursor.getInt(2)); 
+                list.add(sp);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
     public void themNhanVien(NhanVien nv) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -106,14 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("NhanVien", null, "maNV=?", new String[]{maNV}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            NhanVien nv = new NhanVien(
-                    cursor.getString(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getInt(3),
-                    cursor.getDouble(4),
-                    cursor.getString(5)
-            );
+            NhanVien nv = new NhanVien(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getDouble(4), cursor.getString(5));
             cursor.close();
             return nv;
         }
@@ -128,7 +142,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    // --- Methods for DanhMuc ---
+    public double getDoanhThu(String tuNgay, String denNgay) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double doanhThu = 0;
+        String query = "SELECT SUM(tongTien) FROM HoaDon WHERE ngayMua BETWEEN ? AND ?";
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay});
+        if (cursor != null && cursor.moveToFirst()) {
+            doanhThu = cursor.getDouble(0);
+            cursor.close();
+        }
+        return doanhThu;
+    }
+
     public void themDanhMuc(DanhMuc dm) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -137,7 +162,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("DanhMuc", null, values);
     }
 
-    // --- Methods for SanPham ---
     public void themSanPham(SanPham sp) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -162,7 +186,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
-    // --- Methods for KhachHang ---
     public void themKhachHang(KhachHang kh) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -174,7 +197,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("KhachHang", null, values);
     }
 
-    // --- Methods for HoaDon ---
     public void themHoaDon(HoaDon hd) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -193,7 +215,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update("HoaDon", values, "maHD=?", new String[]{maHD});
     }
 
-    // --- Methods for HoaDonChiTiet ---
     public void themHDCT(HoaDonChiTiet hdct) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();

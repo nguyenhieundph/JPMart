@@ -17,6 +17,8 @@ import fpoly.ph34662.jpmart.database.DatabaseHelper;
 import fpoly.ph34662.jpmart.model.Common;
 import fpoly.ph34662.jpmart.model.NhanVien;
 import fpoly.ph34662.jpmart.ui.LoginActivity;
+import fpoly.ph34662.jpmart.ui.ThongKeDoanhThu;
+import fpoly.ph34662.jpmart.ui.ThongKeSanPham;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseHelper db;
@@ -28,6 +30,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = new DatabaseHelper(this);
+
+        // Doanh thu
+        View cardDoanhThu = findViewById(R.id.cardDoanhThu);
+        if (cardDoanhThu != null) {
+            cardDoanhThu.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ThongKeDoanhThu.class);
+                startActivity(intent);
+            });
+        }
+
+        // Top Sản Phẩm
+        View cardTopSP = findViewById(R.id.lnTopSanPham);
+        if (cardTopSP != null) {
+            cardTopSP.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, ThongKeSanPham.class);
+                startActivity(intent);
+            });
+        }
 
         // Đổi mật khẩu
         View cardDoiMK = findViewById(R.id.lnDoiMatKhau);
@@ -56,10 +76,8 @@ public class MainActivity extends AppCompatActivity {
         Button btnCancel = view.findViewById(R.id.btnCancel);
         Button btnUpdate = view.findViewById(R.id.btnUpdate);
 
-        // Xử lý nút Quay lại
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        // Xử lý nút Cập nhật
         btnUpdate.setOnClickListener(v -> {
             String oldPass = edtOldPass.getText().toString().trim();
             String newPass = edtNewPass.getText().toString().trim();
