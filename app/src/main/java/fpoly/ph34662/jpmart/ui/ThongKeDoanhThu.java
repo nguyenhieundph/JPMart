@@ -38,11 +38,18 @@ public class ThongKeDoanhThu extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Chọn Từ ngày
-        edtTuNgay.setOnClickListener(v -> showDatePicker(edtTuNgay));
+        // Xử lý: Ấn 1 lần lấy focus (nhập tay), ấn lần 2 (khi đã có focus) hiện lịch
+        edtTuNgay.setOnClickListener(v -> {
+            if (v.isFocused()) {
+                showDatePicker(edtTuNgay);
+            }
+        });
 
-        // Chọn Đến ngày
-        edtDenNgay.setOnClickListener(v -> showDatePicker(edtDenNgay));
+        edtDenNgay.setOnClickListener(v -> {
+            if (v.isFocused()) {
+                showDatePicker(edtDenNgay);
+            }
+        });
 
         // Nút Thống kê
         btnThongKe.setOnClickListener(v -> {
@@ -50,7 +57,7 @@ public class ThongKeDoanhThu extends AppCompatActivity {
             String denNgay = edtDenNgay.getText().toString();
 
             if (tuNgay.isEmpty() || denNgay.isEmpty()) {
-                Toast.makeText(this, "Vui lòng chọn đầy đủ ngày!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng nhập đầy đủ ngày!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -64,15 +71,9 @@ public class ThongKeDoanhThu extends AppCompatActivity {
 
     private void showDatePicker(TextInputEditText editText) {
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
-            String date = String.format(Locale.getDefault(), "%04d-%02d-%02d", year1, month1 + 1, dayOfMonth);
+        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            String date = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
             editText.setText(date);
-        }, year, month, day);
-
-        datePickerDialog.show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 }

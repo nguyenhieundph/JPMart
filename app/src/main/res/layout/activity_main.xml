@@ -77,6 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp">
@@ -107,10 +109,14 @@
 
             <!-- Top Sản Phẩm -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTopSP"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -139,10 +145,14 @@
 
             <!-- Top Khách Hàng -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTopKH"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -189,10 +199,14 @@
 
             <!-- Sản phẩm -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSanPham"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -221,10 +235,14 @@
 
             <!-- Khách hàng -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardKhachHang"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -253,10 +271,14 @@
 
             <!-- Hóa đơn -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHoaDon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -285,10 +307,14 @@
 
             <!-- Danh mục -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDanhMuc"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -317,10 +343,14 @@
 
             <!-- Nhân viên -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardNhanVien"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -367,10 +397,14 @@
             android:padding="8dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDoiMatKhau"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout
@@ -400,10 +434,14 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDangXuat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp">
 
                 <LinearLayout

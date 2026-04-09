@@ -86,6 +86,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // --- Thống kê Top Khách hàng ---
+    public List<KhachHang> getTopKhachHang(String tuNgay, String denNgay, int limit) {
+        List<KhachHang> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT kh.maKH, kh.hoTen, SUM(hd.tongTien) as totalSpent " +
+                "FROM KhachHang kh " +
+                "JOIN HoaDon hd ON kh.maKH = hd.maKH " +
+                "WHERE hd.ngayMua BETWEEN ? AND ? " +
+                "GROUP BY kh.maKH " +
+                "ORDER BY totalSpent DESC LIMIT ?";
+        
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                KhachHang kh = new KhachHang();
+                kh.setMaKH(cursor.getString(0));
+                kh.setHoTen(cursor.getString(1));
+                kh.setSoDienThoai(String.valueOf(cursor.getDouble(2))); // Dùng tạm trường SĐT để lưu tổng tiền
+                list.add(kh);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    // --- Methods for SanPham/NhanVien/HoaDon giữ nguyên ---
     public List<SanPham> getTopSanPham(String tuNgay, String denNgay, int limit) {
         List<SanPham> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -96,7 +122,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "WHERE hd.ngayMua BETWEEN ? AND ? " +
                 "GROUP BY sp.maSP " +
                 "ORDER BY totalSold DESC LIMIT ?";
-        
         Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -138,8 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("matKhau", newPass);
-        int rows = db.update("NhanVien", values, "maNV=?", new String[]{maNV});
-        return rows > 0;
+        return db.update("NhanVien", values, "maNV=?", new String[]{maNV}) > 0;
     }
 
     public double getDoanhThu(String tuNgay, String denNgay) {

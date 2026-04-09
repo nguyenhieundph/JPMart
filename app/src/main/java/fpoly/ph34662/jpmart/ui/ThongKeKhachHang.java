@@ -2,6 +2,7 @@ package fpoly.ph34662.jpmart.ui;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,31 +18,31 @@ import java.util.List;
 import java.util.Locale;
 
 import fpoly.ph34662.jpmart.R;
-import fpoly.ph34662.jpmart.adapter.TopSanPhamAdapter;
+import fpoly.ph34662.jpmart.adapter.TopKhachHangAdapter;
 import fpoly.ph34662.jpmart.database.DatabaseHelper;
-import fpoly.ph34662.jpmart.model.SanPham;
+import fpoly.ph34662.jpmart.model.KhachHang;
 
-public class ThongKeSanPham extends AppCompatActivity {
+public class ThongKeKhachHang extends AppCompatActivity {
     private TextInputEditText edtTuNgay, edtDenNgay, edtLimit;
-    private RecyclerView rvTopSanPham;
+    private RecyclerView rvTopKhachHang;
     private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_thong_ke_san_pham);
+        setContentView(R.layout.activity_thong_ke_khach_hang);
 
         db = new DatabaseHelper(this);
         initViews();
     }
 
     private void initViews() {
-        edtTuNgay = findViewById(R.id.edtTuNgaySP);
-        edtDenNgay = findViewById(R.id.edtDenNgaySP);
-        edtLimit = findViewById(R.id.edtLimit);
-        rvTopSanPham = findViewById(R.id.rvTopSanPham);
-        Button btnThongKe = findViewById(R.id.btnThongKeSP);
-        ImageView btnBack = findViewById(R.id.btnBack);
+        edtTuNgay = findViewById(R.id.edtTuNgayKH);
+        edtDenNgay = findViewById(R.id.edtDenNgayKH);
+        edtLimit = findViewById(R.id.edtLimitKH);
+        rvTopKhachHang = findViewById(R.id.rvTopKhachHang);
+        Button btnThongKe = findViewById(R.id.btnThongKeKH);
+        ImageView btnBack = findViewById(R.id.btnBackKH);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -73,15 +74,15 @@ public class ThongKeSanPham extends AppCompatActivity {
 
         try {
             int limit = Integer.parseInt(limitStr);
-            List<SanPham> list = db.getTopSanPham(tuNgay, denNgay, limit);
+            List<KhachHang> list = db.getTopKhachHang(tuNgay, denNgay, limit);
 
             if (list.isEmpty()) {
                 Toast.makeText(this, "Không có dữ liệu!", Toast.LENGTH_SHORT).show();
             }
 
-            TopSanPhamAdapter adapter = new TopSanPhamAdapter(list);
-            rvTopSanPham.setLayoutManager(new LinearLayoutManager(this));
-            rvTopSanPham.setAdapter(adapter);
+            TopKhachHangAdapter adapter = new TopKhachHangAdapter(list);
+            rvTopKhachHang.setLayoutManager(new LinearLayoutManager(this));
+            rvTopKhachHang.setAdapter(adapter);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Số lượng không hợp lệ!", Toast.LENGTH_SHORT).show();
         }

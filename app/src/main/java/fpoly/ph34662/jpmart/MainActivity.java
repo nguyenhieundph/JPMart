@@ -18,6 +18,7 @@ import fpoly.ph34662.jpmart.model.Common;
 import fpoly.ph34662.jpmart.model.NhanVien;
 import fpoly.ph34662.jpmart.ui.LoginActivity;
 import fpoly.ph34662.jpmart.ui.ThongKeDoanhThu;
+import fpoly.ph34662.jpmart.ui.ThongKeKhachHang;
 import fpoly.ph34662.jpmart.ui.ThongKeSanPham;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,32 +32,32 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
 
-        // Doanh thu
+        // --- THỐNG KÊ ---
         View cardDoanhThu = findViewById(R.id.cardDoanhThu);
         if (cardDoanhThu != null) {
-            cardDoanhThu.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, ThongKeDoanhThu.class);
-                startActivity(intent);
-            });
+            cardDoanhThu.setOnClickListener(v -> startActivity(new Intent(this, ThongKeDoanhThu.class)));
         }
 
-        // Top Sản Phẩm
-        View cardTopSP = findViewById(R.id.lnTopSanPham);
+        View cardTopSP = findViewById(R.id.cardTopSP);
         if (cardTopSP != null) {
-            cardTopSP.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, ThongKeSanPham.class);
-                startActivity(intent);
-            });
+            cardTopSP.setOnClickListener(v -> startActivity(new Intent(this, ThongKeSanPham.class)));
         }
 
-        // Đổi mật khẩu
-        View cardDoiMK = findViewById(R.id.lnDoiMatKhau);
+        View cardTopKH = findViewById(R.id.cardTopKH);
+        if (cardTopKH != null) {
+            cardTopKH.setOnClickListener(v -> startActivity(new Intent(this, ThongKeKhachHang.class)));
+        }
+
+        // --- QUẢN LÝ ---
+        // (Bạn có thể thêm các sự kiện click cho Sản phẩm, Khách hàng, Hóa đơn... tại đây)
+
+        // --- NGƯỜI DÙNG ---
+        View cardDoiMK = findViewById(R.id.cardDoiMatKhau);
         if (cardDoiMK != null) {
             cardDoiMK.setOnClickListener(v -> showChangePassDialog());
         }
 
-        // Đăng xuất
-        View cardLogout = findViewById(R.id.lnDangXuat);
+        View cardLogout = findViewById(R.id.cardDangXuat);
         if (cardLogout != null) {
             cardLogout.setOnClickListener(v -> showLogoutDialog());
         }
@@ -76,34 +77,36 @@ public class MainActivity extends AppCompatActivity {
         Button btnCancel = view.findViewById(R.id.btnCancel);
         Button btnUpdate = view.findViewById(R.id.btnUpdate);
 
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        btnUpdate.setOnClickListener(v -> {
-            String oldPass = edtOldPass.getText().toString().trim();
-            String newPass = edtNewPass.getText().toString().trim();
-            String confirmPass = edtConfirmPass.getText().toString().trim();
+        if (btnUpdate != null) {
+            btnUpdate.setOnClickListener(v -> {
+                String oldPass = edtOldPass != null && edtOldPass.getText() != null ? edtOldPass.getText().toString().trim() : "";
+                String newPass = edtNewPass != null && edtNewPass.getText() != null ? edtNewPass.getText().toString().trim() : "";
+                String confirmPass = edtConfirmPass != null && edtConfirmPass.getText() != null ? edtConfirmPass.getText().toString().trim() : "";
 
-            if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+                if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+                    Toast.makeText(this, "Vui lòng nhập đầy đủ!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            NhanVien nv = db.layNhanVienBangMaNV(Common.maNhanVien);
-            if (nv != null && nv.getMatKhau().equals(oldPass)) {
-                if (newPass.equals(confirmPass)) {
-                    if (db.updatePassword(Common.maNhanVien, newPass)) {
-                        Toast.makeText(this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
+                NhanVien nv = db.layNhanVienBangMaNV(Common.maNhanVien);
+                if (nv != null && nv.getMatKhau().equals(oldPass)) {
+                    if (newPass.equals(confirmPass)) {
+                        if (db.updatePassword(Common.maNhanVien, newPass)) {
+                            Toast.makeText(this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(this, "Lỗi cập nhật!", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(this, "Lỗi cập nhật!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Mật khẩu mới không trùng khớp!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, "Mật khẩu mới không trùng khớp!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Mật khẩu cũ không chính xác!", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(this, "Mật khẩu cũ không chính xác!", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
 
         dialog.show();
     }
