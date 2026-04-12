@@ -92,7 +92,6 @@ public class QuanLySanPham extends AppCompatActivity {
                 totalQty += sp.getSoLuongTrongGio();
             }
             txtCartBadge.setText(String.valueOf(totalQty));
-            // Luôn hiển thị badge hoặc ẩn nếu bằng 0 tùy bạn, ở đây tôi để ẩn nếu 0 cho đẹp
             txtCartBadge.setVisibility(totalQty > 0 ? View.VISIBLE : View.GONE);
         }
     }
