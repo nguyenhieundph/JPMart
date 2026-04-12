@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,14 +41,22 @@ public class HoaDonAdapter extends RecyclerView.Adapter<HoaDonAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HoaDon hd = list.get(position);
-        holder.txtMaHD.setText("Mã HD: " + hd.getMaHD());
-        holder.txtNgayMua.setText("Ngày: " + hd.getNgayMua());
-        holder.txtTenKH.setText("Khách hàng: " + db.getTenKhachHang(hd.getMaKH()));
+        holder.txtMaHD.setText(hd.getMaHD());
+        holder.txtNgayMua.setText(hd.getNgayMua());
+        holder.txtTenKH.setText(db.getTenKhachHang(hd.getMaKH()));
+        
+        // Hiển thị tên nhân viên
+        if (hd.getMaNV() != null && !hd.getMaNV().isEmpty()) {
+            fpoly.ph34662.jpmart.model.NhanVien nv = db.layNhanVienBangMaNV(hd.getMaNV());
+            holder.txtTenNV.setText(nv != null ? nv.getHoTen() : "Không xác định");
+        } else {
+            holder.txtTenNV.setText("Admin");
+        }
 
         NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         holder.txtTongTien.setText(format.format(hd.getTongTien()));
 
-        holder.itemView.setOnLongClickListener(v -> {
+        holder.btnDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setTitle("Xác nhận xóa")
                     .setMessage("Bạn có chắc chắn muốn xóa hóa đơn này?")
@@ -60,7 +69,6 @@ public class HoaDonAdapter extends RecyclerView.Adapter<HoaDonAdapter.ViewHolder
                     })
                     .setNegativeButton("Hủy", null)
                     .show();
-            return true;
         });
     }
 
@@ -70,14 +78,17 @@ public class HoaDonAdapter extends RecyclerView.Adapter<HoaDonAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtMaHD, txtNgayMua, txtTenKH, txtTongTien;
+        TextView txtMaHD, txtNgayMua, txtTenKH, txtTenNV, txtTongTien;
+        ImageView btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtMaHD = itemView.findViewById(R.id.txtMaHD);
-            txtNgayMua = itemView.findViewById(R.id.txtNgayMua);
+            txtTenNV = itemView.findViewById(R.id.txtTenNV);
             txtTenKH = itemView.findViewById(R.id.txtTenKH_HD);
+            txtNgayMua = itemView.findViewById(R.id.txtNgayMua);
             txtTongTien = itemView.findViewById(R.id.txtTongTienHD);
+            btnDelete = itemView.findViewById(R.id.btnDeleteHD);
         }
     }
 }

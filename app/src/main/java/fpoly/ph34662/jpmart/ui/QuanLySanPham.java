@@ -112,9 +112,7 @@ public class QuanLySanPham extends AppCompatActivity {
                     if (item.getMaSP().equals(sp.getMaSP())) {
                         if (item.getSoLuongTrongGio() < item.getSoLuong()) {
                             item.setSoLuongTrongGio(item.getSoLuongTrongGio() + 1);
-                            Toast.makeText(QuanLySanPham.this, "Đã tăng số lượng " + sp.getTenSP(), Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(QuanLySanPham.this, "Sản phẩm trong kho đã hết!", Toast.LENGTH_SHORT).show();
                         }
                         isExist = true;
                         break;
@@ -125,9 +123,7 @@ public class QuanLySanPham extends AppCompatActivity {
                     if (sp.getSoLuong() > 0) {
                         sp.setSoLuongTrongGio(1);
                         Common.cart.add(sp);
-                        Toast.makeText(QuanLySanPham.this, "Đã thêm " + sp.getTenSP() + " vào giỏ!", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(QuanLySanPham.this, "Sản phẩm đã hết hàng!", Toast.LENGTH_SHORT).show();
                     }
                 }
                 updateBadge();
