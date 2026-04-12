@@ -20,7 +20,26 @@
             android:name=".MainActivity"
             android:exported="false" />
 
-        <!-- Đăng ký các màn hình thống kê -->
+        <activity 
+            android:name=".ui.QuanLySanPham"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".ui.QuanLyKhachHang"
+            android:exported="false" />
+            
+        <activity 
+            android:name=".ui.HoaDonActivity"
+            android:exported="false" />
+
+        <activity 
+            android:name=".ui.QuanLyDanhMuc"
+            android:exported="false" />
+
+        <activity 
+            android:name=".ui.QuanLyNhanVien"
+            android:exported="false" />
+
         <activity 
             android:name=".ui.ThongKeDoanhThu"
             android:exported="false" />

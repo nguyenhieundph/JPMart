@@ -86,50 +86,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // --- Thống kê Top Khách hàng ---
-    public List<KhachHang> getTopKhachHang(String tuNgay, String denNgay, int limit) {
-        List<KhachHang> list = new ArrayList<>();
+    // --- QUẢN LÝ NHÂN VIÊN ---
+    public List<NhanVien> getAllNhanVien() {
+        List<NhanVien> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT kh.maKH, kh.hoTen, SUM(hd.tongTien) as totalSpent " +
-                "FROM KhachHang kh " +
-                "JOIN HoaDon hd ON kh.maKH = hd.maKH " +
-                "WHERE hd.ngayMua BETWEEN ? AND ? " +
-                "GROUP BY kh.maKH " +
-                "ORDER BY totalSpent DESC LIMIT ?";
-        
-        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
+        Cursor cursor = db.rawQuery("SELECT * FROM NhanVien", null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                KhachHang kh = new KhachHang();
-                kh.setMaKH(cursor.getString(0));
-                kh.setHoTen(cursor.getString(1));
-                kh.setSoDienThoai(String.valueOf(cursor.getDouble(2))); // Dùng tạm trường SĐT để lưu tổng tiền
-                list.add(kh);
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        return list;
-    }
-
-    // --- Methods for SanPham/NhanVien/HoaDon giữ nguyên ---
-    public List<SanPham> getTopSanPham(String tuNgay, String denNgay, int limit) {
-        List<SanPham> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT sp.maSP, sp.tenSP, SUM(hdct.soLuong) as totalSold " +
-                "FROM SanPham sp " +
-                "JOIN HoaDonChiTiet hdct ON sp.maSP = hdct.maSP " +
-                "JOIN HoaDon hd ON hdct.maHD = hd.maHD " +
-                "WHERE hd.ngayMua BETWEEN ? AND ? " +
-                "GROUP BY sp.maSP " +
-                "ORDER BY totalSold DESC LIMIT ?";
-        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                SanPham sp = new SanPham();
-                sp.setMaSP(cursor.getString(0));
-                sp.setTenSP(cursor.getString(1));
-                sp.setSoLuong(cursor.getInt(2)); 
-                list.add(sp);
+                list.add(new NhanVien(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getDouble(4), cursor.getString(5)));
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -138,14 +102,219 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void themNhanVien(NhanVien nv) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maNV", nv.getMaNV());
-        values.put("hoTen", nv.getHoTen());
-        values.put("diaChi", nv.getDiaChi());
-        values.put("chucVu", nv.getChucVu());
-        values.put("luong", nv.getLuong());
-        values.put("matKhau", nv.getMatKhau());
-        db.insert("NhanVien", null, values);
+        ContentValues v = new ContentValues();
+        v.put("maNV", nv.getMaNV()); v.put("hoTen", nv.getHoTen()); v.put("diaChi", nv.getDiaChi());
+        v.put("chucVu", nv.getChucVu()); v.put("luong", nv.getLuong()); v.put("matKhau", nv.getMatKhau());
+        db.insert("NhanVien", null, v);
+    }
+
+    public boolean suaNhanVien(NhanVien nv) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("hoTen", nv.getHoTen()); v.put("diaChi", nv.getDiaChi());
+        v.put("chucVu", nv.getChucVu()); v.put("luong", nv.getLuong()); v.put("matKhau", nv.getMatKhau());
+        return db.update("NhanVien", v, "maNV=?", new String[]{nv.getMaNV()}) > 0;
+    }
+
+    public boolean xoaNhanVien(String maNV) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("NhanVien", "maNV=?", new String[]{maNV}) > 0;
+    }
+
+    // --- QUẢN LÝ DANH MỤC ---
+    public List<DanhMuc> getAllDanhMuc() {
+        List<DanhMuc> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM DanhMuc", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                list.add(new DanhMuc(cursor.getString(0), cursor.getString(1)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public void themDanhMuc(DanhMuc dm) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("maDM", dm.getMaDM()); v.put("tenDM", dm.getTenDM());
+        db.insert("DanhMuc", null, v);
+    }
+
+    public boolean suaDanhMuc(DanhMuc dm) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("tenDM", dm.getTenDM());
+        return db.update("DanhMuc", v, "maDM=?", new String[]{dm.getMaDM()}) > 0;
+    }
+
+    public boolean xoaDanhMuc(String maDM) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("DanhMuc", "maDM=?", new String[]{maDM}) > 0;
+    }
+
+    // --- QUẢN LÝ SẢN PHẨM ---
+    public List<SanPham> getAllSanPham() {
+        List<SanPham> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM SanPham", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                list.add(new SanPham(cursor.getString(0), cursor.getString(1), cursor.getDouble(2), cursor.getInt(3), cursor.getString(4), cursor.getString(5), cursor.getString(6)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public void themSanPham(SanPham sp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("maSP", sp.getMaSP()); v.put("tenSP", sp.getTenSP()); v.put("giaBan", sp.getGiaBan());
+        v.put("soLuong", sp.getSoLuong()); v.put("donViTinh", sp.getDonViTinh());
+        v.put("ngayNhap", sp.getNgayNhap()); v.put("maDM", sp.getMaDM());
+        db.insert("SanPham", null, v);
+    }
+
+    public boolean suaSanPham(SanPham sp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("tenSP", sp.getTenSP()); v.put("giaBan", sp.getGiaBan()); v.put("soLuong", sp.getSoLuong());
+        v.put("donViTinh", sp.getDonViTinh()); v.put("maDM", sp.getMaDM());
+        return db.update("SanPham", v, "maSP=?", new String[]{sp.getMaSP()}) > 0;
+    }
+
+    public boolean xoaSanPham(String maSP) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("SanPham", "maSP=?", new String[]{maSP}) > 0;
+    }
+
+    // --- QUẢN LÝ KHÁCH HÀNG ---
+    public List<KhachHang> getAllKhachHang() {
+        List<KhachHang> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM KhachHang", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                list.add(new KhachHang(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public void themKhachHang(KhachHang kh) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("maKH", kh.getMaKH()); v.put("hoTen", kh.getHoTen()); v.put("diaChi", kh.getDiaChi());
+        v.put("soDienThoai", kh.getSoDienThoai()); v.put("email", kh.getEmail());
+        db.insert("KhachHang", null, v);
+    }
+
+    public boolean suaKhachHang(KhachHang kh) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("hoTen", kh.getHoTen()); v.put("diaChi", kh.getDiaChi());
+        v.put("soDienThoai", kh.getSoDienThoai()); v.put("email", kh.getEmail());
+        return db.update("KhachHang", v, "maKH=?", new String[]{kh.getMaKH()}) > 0;
+    }
+
+    public boolean xoaKhachHang(String maKH) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("KhachHang", "maKH=?", new String[]{maKH}) > 0;
+    }
+
+    // --- QUẢN LÝ HÓA ĐƠN ---
+    public List<HoaDon> getAllHoaDon() {
+        List<HoaDon> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM HoaDon", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                list.add(new HoaDon(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getDouble(4)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public boolean xoaHoaDon(String maHD) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("HoaDonChiTiet", "maHD=?", new String[]{maHD});
+        return db.delete("HoaDon", "maHD=?", new String[]{maHD}) > 0;
+    }
+
+    public String getTenKhachHang(String maKH) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("KhachHang", new String[]{"hoTen"}, "maKH=?", new String[]{maKH}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String ten = cursor.getString(0);
+            cursor.close();
+            return ten;
+        }
+        return "Nặc danh";
+    }
+
+    public void themHoaDon(HoaDon hd) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("maHD", hd.getMaHD()); v.put("maNV", hd.getMaNV()); v.put("maKH", hd.getMaKH());
+        v.put("ngayMua", hd.getNgayMua()); v.put("tongTien", hd.getTongTien());
+        db.insert("HoaDon", null, v);
+    }
+
+    public void themHDCT(HoaDonChiTiet hdct) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("maHD", hdct.getMaHD()); v.put("maSP", hdct.getMaSP());
+        v.put("soLuong", hdct.getSoLuong()); v.put("giaBan", hdct.getGiaBan());
+        db.insert("HoaDonChiTiet", null, v);
+    }
+
+    // --- THỐNG KÊ ---
+    public List<SanPham> getTopSanPham(String tuNgay, String denNgay, int limit) {
+        List<SanPham> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT sp.maSP, sp.tenSP, SUM(hdct.soLuong) as totalSold FROM SanPham sp JOIN HoaDonChiTiet hdct ON sp.maSP = hdct.maSP JOIN HoaDon hd ON hdct.maHD = hd.maHD WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY sp.maSP ORDER BY totalSold DESC LIMIT ?";
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                SanPham sp = new SanPham();
+                sp.setMaSP(cursor.getString(0)); sp.setTenSP(cursor.getString(1)); sp.setSoLuong(cursor.getInt(2));
+                list.add(sp);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public List<KhachHang> getTopKhachHang(String tuNgay, String denNgay, int limit) {
+        List<KhachHang> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT kh.maKH, kh.hoTen, SUM(hd.tongTien) as totalSpent FROM KhachHang kh JOIN HoaDon hd ON kh.maKH = hd.maKH WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY kh.maKH ORDER BY totalSpent DESC LIMIT ?";
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                KhachHang kh = new KhachHang();
+                kh.setMaKH(cursor.getString(0)); kh.setHoTen(cursor.getString(1)); kh.setSoDienThoai(String.valueOf(cursor.getDouble(2)));
+                list.add(kh);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public double getDoanhThu(String tuNgay, String denNgay) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double doanhThu = 0;
+        String query = "SELECT SUM(tongTien) FROM HoaDon WHERE ngayMua BETWEEN ? AND ?";
+        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay});
+        if (cursor != null && cursor.moveToFirst()) {
+            doanhThu = cursor.getDouble(0);
+            cursor.close();
+        }
+        return doanhThu;
     }
 
     public NhanVien layNhanVienBangMaNV(String maNV) {
@@ -161,91 +330,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updatePassword(String maNV, String newPass) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("matKhau", newPass);
-        return db.update("NhanVien", values, "maNV=?", new String[]{maNV}) > 0;
-    }
-
-    public double getDoanhThu(String tuNgay, String denNgay) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        double doanhThu = 0;
-        String query = "SELECT SUM(tongTien) FROM HoaDon WHERE ngayMua BETWEEN ? AND ?";
-        Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay});
-        if (cursor != null && cursor.moveToFirst()) {
-            doanhThu = cursor.getDouble(0);
-            cursor.close();
-        }
-        return doanhThu;
-    }
-
-    public void themDanhMuc(DanhMuc dm) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maDM", dm.getMaDM());
-        values.put("tenDM", dm.getTenDM());
-        db.insert("DanhMuc", null, values);
-    }
-
-    public void themSanPham(SanPham sp) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maSP", sp.getMaSP());
-        values.put("tenSP", sp.getTenSP());
-        values.put("giaBan", sp.getGiaBan());
-        values.put("soLuong", sp.getSoLuong());
-        values.put("donViTinh", sp.getDonViTinh());
-        values.put("ngayNhap", sp.getNgayNhap());
-        values.put("maDM", sp.getMaDM());
-        db.insert("SanPham", null, values);
-    }
-
-    public double layDonGiaSanPham(String maSP) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("SanPham", new String[]{"giaBan"}, "maSP=?", new String[]{maSP}, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            double gia = cursor.getDouble(0);
-            cursor.close();
-            return gia;
-        }
-        return 0;
-    }
-
-    public void themKhachHang(KhachHang kh) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maKH", kh.getMaKH());
-        values.put("hoTen", kh.getHoTen());
-        values.put("diaChi", kh.getDiaChi());
-        values.put("soDienThoai", kh.getSoDienThoai());
-        values.put("email", kh.getEmail());
-        db.insert("KhachHang", null, values);
-    }
-
-    public void themHoaDon(HoaDon hd) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maHD", hd.getMaHD());
-        values.put("maNV", hd.getMaNV());
-        values.put("maKH", hd.getMaKH());
-        values.put("ngayMua", hd.getNgayMua());
-        values.put("tongTien", hd.getTongTien());
-        db.insert("HoaDon", null, values);
-    }
-
-    public void capNhatTongTienHoaDon(String maHD, double tongTien) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("tongTien", tongTien);
-        db.update("HoaDon", values, "maHD=?", new String[]{maHD});
-    }
-
-    public void themHDCT(HoaDonChiTiet hdct) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("maHD", hdct.getMaHD());
-        values.put("maSP", hdct.getMaSP());
-        values.put("soLuong", hdct.getSoLuong());
-        values.put("giaBan", hdct.getGiaBan());
-        db.insert("HoaDonChiTiet", null, values);
+        ContentValues v = new ContentValues();
+        v.put("matKhau", newPass);
+        return db.update("NhanVien", v, "maNV=?", new String[]{maNV}) > 0;
     }
 }

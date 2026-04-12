@@ -16,7 +16,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import fpoly.ph34662.jpmart.database.DatabaseHelper;
 import fpoly.ph34662.jpmart.model.Common;
 import fpoly.ph34662.jpmart.model.NhanVien;
+import fpoly.ph34662.jpmart.ui.HoaDonActivity;
 import fpoly.ph34662.jpmart.ui.LoginActivity;
+import fpoly.ph34662.jpmart.ui.QuanLyDanhMuc;
+import fpoly.ph34662.jpmart.ui.QuanLyKhachHang;
+import fpoly.ph34662.jpmart.ui.QuanLyNhanVien;
+import fpoly.ph34662.jpmart.ui.QuanLySanPham;
 import fpoly.ph34662.jpmart.ui.ThongKeDoanhThu;
 import fpoly.ph34662.jpmart.ui.ThongKeKhachHang;
 import fpoly.ph34662.jpmart.ui.ThongKeSanPham;
@@ -33,33 +38,29 @@ public class MainActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
 
         // --- THỐNG KÊ ---
-        View cardDoanhThu = findViewById(R.id.cardDoanhThu);
-        if (cardDoanhThu != null) {
-            cardDoanhThu.setOnClickListener(v -> startActivity(new Intent(this, ThongKeDoanhThu.class)));
-        }
-
-        View cardTopSP = findViewById(R.id.cardTopSP);
-        if (cardTopSP != null) {
-            cardTopSP.setOnClickListener(v -> startActivity(new Intent(this, ThongKeSanPham.class)));
-        }
-
-        View cardTopKH = findViewById(R.id.cardTopKH);
-        if (cardTopKH != null) {
-            cardTopKH.setOnClickListener(v -> startActivity(new Intent(this, ThongKeKhachHang.class)));
-        }
+        setupClick(R.id.cardDoanhThu, ThongKeDoanhThu.class);
+        setupClick(R.id.cardTopSP, ThongKeSanPham.class);
+        setupClick(R.id.cardTopKH, ThongKeKhachHang.class);
 
         // --- QUẢN LÝ ---
-        // (Bạn có thể thêm các sự kiện click cho Sản phẩm, Khách hàng, Hóa đơn... tại đây)
+        setupClick(R.id.cardSanPham, QuanLySanPham.class);
+        setupClick(R.id.cardKhachHang, QuanLyKhachHang.class);
+        setupClick(R.id.cardHoaDon, HoaDonActivity.class);
+        setupClick(R.id.cardDanhMuc, QuanLyDanhMuc.class);
+        setupClick(R.id.cardNhanVien, QuanLyNhanVien.class);
 
         // --- NGƯỜI DÙNG ---
         View cardDoiMK = findViewById(R.id.cardDoiMatKhau);
-        if (cardDoiMK != null) {
-            cardDoiMK.setOnClickListener(v -> showChangePassDialog());
-        }
+        if (cardDoiMK != null) cardDoiMK.setOnClickListener(v -> showChangePassDialog());
 
         View cardLogout = findViewById(R.id.cardDangXuat);
-        if (cardLogout != null) {
-            cardLogout.setOnClickListener(v -> showLogoutDialog());
+        if (cardLogout != null) cardLogout.setOnClickListener(v -> showLogoutDialog());
+    }
+
+    private void setupClick(int id, Class<?> target) {
+        View view = findViewById(id);
+        if (view != null) {
+            view.setOnClickListener(v -> startActivity(new Intent(this, target)));
         }
     }
 
