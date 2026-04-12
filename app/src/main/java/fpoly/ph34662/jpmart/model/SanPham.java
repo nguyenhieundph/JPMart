@@ -1,13 +1,16 @@
 package fpoly.ph34662.jpmart.model;
 
+import androidx.annotation.NonNull;
+
 public class SanPham {
     private String maSP;
     private String tenSP;
     private double giaBan;
-    private int soLuong;
+    private int soLuong; // Số lượng tồn kho
     private String donViTinh;
     private String ngayNhap;
     private String maDM;
+    private int soLuongTrongGio = 0; // Số lượng chọn mua
 
     public SanPham() {}
 
@@ -35,4 +38,13 @@ public class SanPham {
     public void setNgayNhap(String ngayNhap) { this.ngayNhap = ngayNhap; }
     public String getMaDM() { return maDM; }
     public void setMaDM(String maDM) { this.maDM = maDM; }
+
+    public int getSoLuongTrongGio() { return soLuongTrongGio; }
+    public void setSoLuongTrongGio(int soLuongTrongGio) { this.soLuongTrongGio = soLuongTrongGio; }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return tenSP + " - " + giaBan + "đ (Kho: " + soLuong + ")";
+    }
 }

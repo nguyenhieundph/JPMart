@@ -28,6 +28,7 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
 
     public interface OnItemClickListener {
         void onEditClick(SanPham sp);
+        default void onAddToCart(SanPham sp) {}
     }
 
     public SanPhamAdapter(Context context, List<SanPham> list, OnItemClickListener listener) {
@@ -49,12 +50,22 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
         SanPham sp = list.get(position);
         holder.txtTenSP.setText(sp.getTenSP());
         holder.txtMaSP.setText("Mã: " + sp.getMaSP());
-        holder.txtSoLuongSP.setText("Số lượng: " + sp.getSoLuong() + " " + sp.getDonViTinh());
+        holder.txtSoLuongSP.setText("Kho: " + sp.getSoLuong() + " | Đơn vị: " + sp.getDonViTinh());
 
         NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         holder.txtGiaSP.setText("Giá: " + format.format(sp.getGiaBan()));
 
         holder.imgEdit.setOnClickListener(v -> listener.onEditClick(sp));
+
+        if (holder.imgAddToCart != null) {
+            holder.imgAddToCart.setOnClickListener(v -> {
+                if (sp.getSoLuong() <= 0) {
+                    Toast.makeText(context, "Sản phẩm đã hết hàng!", Toast.LENGTH_SHORT).show();
+                } else {
+                    listener.onAddToCart(sp);
+                }
+            });
+        }
 
         holder.imgDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
@@ -78,9 +89,14 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
         return list.size();
     }
 
+    public void updateList(List<SanPham> newList) {
+        this.list = newList;
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTenSP, txtMaSP, txtGiaSP, txtSoLuongSP;
-        ImageView imgEdit, imgDelete;
+        ImageView imgEdit, imgDelete, imgAddToCart;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -90,6 +106,7 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
             txtSoLuongSP = itemView.findViewById(R.id.txtSoLuongSP);
             imgEdit = itemView.findViewById(R.id.imgEdit);
             imgDelete = itemView.findViewById(R.id.imgDelete);
+            imgAddToCart = itemView.findViewById(R.id.imgAddToCart);
         }
     }
 }

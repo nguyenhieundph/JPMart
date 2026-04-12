@@ -11,15 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.Locale;
-
 import fpoly.ph34662.jpmart.MainActivity;
 import fpoly.ph34662.jpmart.R;
 import fpoly.ph34662.jpmart.database.DatabaseHelper;
 import fpoly.ph34662.jpmart.model.Common;
 import fpoly.ph34662.jpmart.model.DanhMuc;
-import fpoly.ph34662.jpmart.model.HoaDon;
-import fpoly.ph34662.jpmart.model.HoaDonChiTiet;
 import fpoly.ph34662.jpmart.model.KhachHang;
 import fpoly.ph34662.jpmart.model.NhanVien;
 import fpoly.ph34662.jpmart.model.SanPham;
@@ -36,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Ánh xạ ID chính xác từ layout mới
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         cbkRemember = findViewById(R.id.cbkRemember);
@@ -44,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
         
-        // Khởi tạo dữ liệu mẫu nếu là lần đầu chạy
         SharedPreferences prefs = getSharedPreferences("my_prefs", MODE_PRIVATE);
         boolean isInit = prefs.getBoolean("init", false);
         if (!isInit) {
@@ -115,11 +109,9 @@ public class LoginActivity extends AppCompatActivity {
         taoDuLieuDanhMuc();
         taoDuLieuSanPham();
         taoDuLieuKhachHang();
-        taoDuLieuHoaDon();
-        taoDuLieuHoaDonChiTiet();
+        // Đã xóa phần tự tạo hóa đơn và hóa đơn chi tiết
     }
 
-    // Các phương thức tạo dữ liệu giữ nguyên (rút gọn để tránh quá dài)
     public void taoDuLieuSanPham() {
         db.themSanPham(new SanPham("SP001", "Nước ngọt Calpis", 12000, 50, "Lon", "2024-02-08", "DM001"));
         db.themSanPham(new SanPham("SP002", "Trà xanh Ito En", 10000, 40, "Lon", "2024-02-08", "DM001"));
@@ -141,13 +133,5 @@ public class LoginActivity extends AppCompatActivity {
     public void taoDuLieuNhanVien() {
         db.themNhanVien(new NhanVien("NV001", "Admin", "TP.HCM", 1, 25000000, "admin123"));
         db.themNhanVien(new NhanVien("NV002", "Staff", "TP.HCM", 0, 12000000, "staff123"));
-    }
-
-    public void taoDuLieuHoaDon() {
-        db.themHoaDon(new HoaDon("HD001", "NV001", "KH001", "2024-01-05", 180000));
-    }
-
-    public void taoDuLieuHoaDonChiTiet() {
-        db.themHDCT(new HoaDonChiTiet(1, "HD001", "SP001", 2, 12000));
     }
 }

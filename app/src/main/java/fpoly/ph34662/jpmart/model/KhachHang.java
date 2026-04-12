@@ -1,5 +1,7 @@
 package fpoly.ph34662.jpmart.model;
 
+import androidx.annotation.NonNull;
+
 public class KhachHang {
     private String maKH;
     private String hoTen;
@@ -27,4 +29,10 @@ public class KhachHang {
     public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return hoTen + " - " + maKH;
+    }
 }

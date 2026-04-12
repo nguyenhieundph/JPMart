@@ -50,6 +50,10 @@
             android:name=".ui.ThongKeKhachHang"
             android:exported="false" />
 
+        <activity 
+            android:name=".ui.BanHangActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.WelcomeAtivity"
             android:exported="true">

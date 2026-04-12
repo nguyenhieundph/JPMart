@@ -161,7 +161,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM SanPham", null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                list.add(new SanPham(cursor.getString(0), cursor.getString(1), cursor.getDouble(2), cursor.getInt(3), cursor.getString(4), cursor.getString(5), cursor.getString(6)));
+                list.add(new SanPham(cursor.getString(0), cursor.getString(1), cursor.getDouble(2),
+                        cursor.getInt(3), cursor.getString(4), cursor.getString(5), cursor.getString(6)));
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -183,6 +184,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         v.put("tenSP", sp.getTenSP()); v.put("giaBan", sp.getGiaBan()); v.put("soLuong", sp.getSoLuong());
         v.put("donViTinh", sp.getDonViTinh()); v.put("maDM", sp.getMaDM());
         return db.update("SanPham", v, "maSP=?", new String[]{sp.getMaSP()}) > 0;
+    }
+
+    public boolean truSoLuongSanPham(String maSP, int soLuongMua) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE SanPham SET soLuong = soLuong - " + soLuongMua + " WHERE maSP = ?", new String[]{maSP});
+        return true;
     }
 
     public boolean xoaSanPham(String maSP) {

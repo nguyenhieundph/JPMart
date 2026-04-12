@@ -61,9 +61,18 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/imgAddToCart"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:src="@android:drawable/ic_menu_add"
+                app:tint="#4CAF50" />
+
+            <ImageView
                 android:id="@+id/imgEdit"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:layout_marginStart="4dp"
                 android:padding="4dp"
                 android:src="@android:drawable/ic_menu_edit"
                 app:tint="@color/primaryColor" />
@@ -72,7 +81,7 @@
                 android:id="@+id/imgDelete"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:padding="4dp"
                 android:src="@android:drawable/ic_menu_delete"
                 app:tint="@color/red" />
