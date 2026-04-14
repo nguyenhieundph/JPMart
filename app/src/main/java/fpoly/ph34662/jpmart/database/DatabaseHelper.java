@@ -283,7 +283,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<SanPham> getTopSanPham(String tuNgay, String denNgay, int limit) {
         List<SanPham> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT sp.maSP, sp.tenSP, SUM(hdct.soLuong) as totalSold FROM SanPham sp JOIN HoaDonChiTiet hdct ON sp.maSP = hdct.maSP JOIN HoaDon hd ON hdct.maHD = hd.maHD WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY sp.maSP ORDER BY totalSold DESC LIMIT ?";
+        String query = "SELECT sp.maSP, sp.tenSP, SUM(hdct.soLuong) as totalSold FROM SanPham sp JOIN HoaDonChiTiet hdct ON sp.maSP = hdct.maSP " +
+                "JOIN HoaDon hd ON hdct.maHD = hd.maHD WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY sp.maSP ORDER BY totalSold DESC LIMIT ?";
         Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -299,12 +300,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<KhachHang> getTopKhachHang(String tuNgay, String denNgay, int limit) {
         List<KhachHang> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT kh.maKH, kh.hoTen, SUM(hd.tongTien) as totalSpent FROM KhachHang kh JOIN HoaDon hd ON kh.maKH = hd.maKH WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY kh.maKH ORDER BY totalSpent DESC LIMIT ?";
+        String query = "SELECT kh.maKH, kh.hoTen, SUM(hd.tongTien) as totalSpent FROM KhachHang kh JOIN HoaDon hd " +
+                "ON kh.maKH = hd.maKH WHERE hd.ngayMua BETWEEN ? AND ? GROUP BY kh.maKH ORDER BY totalSpent DESC LIMIT ?";
         Cursor cursor = db.rawQuery(query, new String[]{tuNgay, denNgay, String.valueOf(limit)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 KhachHang kh = new KhachHang();
-                kh.setMaKH(cursor.getString(0)); kh.setHoTen(cursor.getString(1)); kh.setSoDienThoai(String.valueOf(cursor.getDouble(2)));
+                kh.setMaKH(cursor.getString(0)); kh.setHoTen(cursor.getString(1));
+                kh.setSoDienThoai(String.valueOf(cursor.getDouble(2)));
                 list.add(kh);
             } while (cursor.moveToNext());
             cursor.close();

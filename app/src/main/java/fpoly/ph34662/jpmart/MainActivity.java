@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import fpoly.ph34662.jpmart.database.DatabaseHelper;
 import fpoly.ph34662.jpmart.model.Common;
 import fpoly.ph34662.jpmart.model.NhanVien;
+import fpoly.ph34662.jpmart.ui.BanHangActivity;
 import fpoly.ph34662.jpmart.ui.HoaDonActivity;
 import fpoly.ph34662.jpmart.ui.LoginActivity;
 import fpoly.ph34662.jpmart.ui.QuanLyDanhMuc;
@@ -37,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
 
-        // --- THỐNG KÊ ---
+        // --- CHỨC NĂNG CHÍNH ---
+
+        // --- THỐNG KÊ (Chỉ Admin mới được vào) ---
         setupClick(R.id.cardDoanhThu, ThongKeDoanhThu.class);
         setupClick(R.id.cardTopSP, ThongKeSanPham.class);
         setupClick(R.id.cardTopKH, ThongKeKhachHang.class);
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         setupClick(R.id.cardKhachHang, QuanLyKhachHang.class);
         setupClick(R.id.cardHoaDon, HoaDonActivity.class);
         setupClick(R.id.cardDanhMuc, QuanLyDanhMuc.class);
+        
+        // Quản lý nhân viên cũng chỉ dành cho Admin
         setupClick(R.id.cardNhanVien, QuanLyNhanVien.class);
 
         // --- NGƯỜI DÙNG ---
@@ -57,10 +62,32 @@ public class MainActivity extends AppCompatActivity {
         if (cardLogout != null) cardLogout.setOnClickListener(v -> showLogoutDialog());
     }
 
+    /**
+     * Thiết lập sự kiện click cho các chức năng
+     * Kiểm tra quyền hạn trước khi chuyển màn hình
+     */
     private void setupClick(int id, Class<?> target) {
         View view = findViewById(id);
         if (view != null) {
-            view.setOnClickListener(v -> startActivity(new Intent(this, target)));
+            view.setOnClickListener(v -> {
+                NhanVien nv = db.layNhanVienBangMaNV(Common.maNhanVien);
+                if (nv != null) {
+                    // Nếu là tài khoản Staff (chucVu = 0)
+                    if (nv.getChucVu() == 0) {
+                        // Danh sách các lớp bị hạn chế đối với Staff
+                        if (target == ThongKeDoanhThu.class || 
+                            target == ThongKeSanPham.class || 
+                            target == ThongKeKhachHang.class ||
+                            target == QuanLyNhanVien.class) {
+                            
+                            Toast.makeText(this, "Tài khoản nhân viên không được sử dụng chức năng này!", Toast.LENGTH_SHORT).show();
+                            return; // Không cho phép chuyển màn hình
+                        }
+                    }
+                }
+                // Nếu là Admin hoặc chức năng không bị hạn chế thì cho phép vào
+                startActivity(new Intent(this, target));
+            });
         }
     }
 

@@ -39,17 +39,37 @@ public class LoginActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
         
-        SharedPreferences prefs = getSharedPreferences("my_prefs", MODE_PRIVATE);
-        boolean isInit = prefs.getBoolean("init", false);
-        if (!isInit) {
-            taoDuLieuHeThong();
-            prefs.edit().putBoolean("init", true).apply();
-        }
+        // Luôn đảm bảo tài khoản hệ thống tồn tại mỗi khi mở app
+        taoDuLieuMacDinh();
 
         sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         loadSavedAccount();
         
         btnLogin.setOnClickListener(view -> handleLogin());
+    }
+
+    private void taoDuLieuMacDinh() {
+        // Kiểm tra và tạo NV001 (Admin) nếu chưa có
+        if (db.layNhanVienBangMaNV("NV001") == null) {
+            db.themNhanVien(new NhanVien("NV001", "Admin", "TP.HCM", 1, 25000000, "admin123"));
+        }
+        // Kiểm tra và tạo NV002 (Staff) nếu chưa có
+        if (db.layNhanVienBangMaNV("NV002") == null) {
+            db.themNhanVien(new NhanVien("NV002", "Staff", "TP.HCM", 0, 12000000, "staff123"));
+        }
+
+        // Tự động tạo dữ liệu mẫu khác nếu chưa có
+        if (db.getAllDanhMuc().isEmpty()) {
+            db.themDanhMuc(new DanhMuc("DM001", "Đồ uống"));
+            db.themDanhMuc(new DanhMuc("DM002", "Bánh kẹo"));
+        }
+        if (db.getAllSanPham().isEmpty()) {
+            db.themSanPham(new SanPham("SP001", "Nước ngọt Calpis", 12000, 50, "Lon", "2024-02-08", "DM001"));
+            db.themSanPham(new SanPham("SP002", "Trà xanh Ito En", 10000, 40, "Lon", "2024-02-08", "DM001"));
+        }
+        if (db.getAllKhachHang().isEmpty()) {
+            db.themKhachHang(new KhachHang("KH001", "Nặc danh", "", "0000", ""));
+        }
     }
 
     private void loadSavedAccount() {
@@ -79,10 +99,9 @@ public class LoginActivity extends AppCompatActivity {
             if (password.equals(nhanVien.getMatKhau())) {
                 saveAccountPreferences(maNhanVien, password);
                 
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("CHUC_VU", nhanVien.getChucVu());
-                startActivity(intent);
                 Common.maNhanVien = maNhanVien;
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
                 finish();
             } else {
                 Toast.makeText(this, "Sai mật khẩu!", Toast.LENGTH_SHORT).show();
@@ -102,36 +121,5 @@ public class LoginActivity extends AppCompatActivity {
             editor.clear();
         }
         editor.apply();
-    }
-
-    private void taoDuLieuHeThong() {
-        taoDuLieuNhanVien();
-        taoDuLieuDanhMuc();
-        taoDuLieuSanPham();
-        taoDuLieuKhachHang();
-        // Đã xóa phần tự tạo hóa đơn và hóa đơn chi tiết
-    }
-
-    public void taoDuLieuSanPham() {
-        db.themSanPham(new SanPham("SP001", "Nước ngọt Calpis", 12000, 50, "Lon", "2024-02-08", "DM001"));
-        db.themSanPham(new SanPham("SP002", "Trà xanh Ito En", 10000, 40, "Lon", "2024-02-08", "DM001"));
-        db.themSanPham(new SanPham("SP003", "Bánh Pocky", 25000, 30, "Hộp", "2024-02-07", "DM002"));
-        db.themSanPham(new SanPham("SP004", "Sữa Meiji", 15000, 20, "Hộp", "2024-02-06", "DM003"));
-        db.themSanPham(new SanPham("SP005", "Mì Udon", 5000, 100, "Gói", "2024-02-05", "DM004"));
-    }
-
-    public void taoDuLieuKhachHang() {
-        db.themKhachHang(new KhachHang("KH001", "Nặc danh", "", "0000", ""));
-        db.themKhachHang(new KhachHang("KH002", "Trần Thị Bích", "456 Đường XYZ, Hà Nội", "0988777666", "tranthibich@example.com"));
-    }
-
-    public void taoDuLieuDanhMuc() {
-        db.themDanhMuc(new DanhMuc("DM001", "Đồ uống"));
-        db.themDanhMuc(new DanhMuc("DM002", "Bánh kẹo"));
-    }
-
-    public void taoDuLieuNhanVien() {
-        db.themNhanVien(new NhanVien("NV001", "Admin", "TP.HCM", 1, 25000000, "admin123"));
-        db.themNhanVien(new NhanVien("NV002", "Staff", "TP.HCM", 0, 12000000, "staff123"));
     }
 }

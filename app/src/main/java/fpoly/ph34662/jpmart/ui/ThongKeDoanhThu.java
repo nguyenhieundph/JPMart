@@ -51,7 +51,6 @@ public class ThongKeDoanhThu extends AppCompatActivity {
             }
         });
 
-        // Nút Thống kê
         btnThongKe.setOnClickListener(v -> {
             String tuNgay = edtTuNgay.getText().toString();
             String denNgay = edtDenNgay.getText().toString();
@@ -62,8 +61,7 @@ public class ThongKeDoanhThu extends AppCompatActivity {
             }
 
             double doanhThu = db.getDoanhThu(tuNgay, denNgay);
-            
-            // Định dạng tiền tệ VNĐ
+
             NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             txtDoanhThu.setText(format.format(doanhThu));
         });
